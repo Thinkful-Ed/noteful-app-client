@@ -140,7 +140,7 @@ const noteful = (function () {
 
       const noteId = getNoteIdFromElement(event.currentTarget);
 
-      api.details(`http://localhost:8080/api/notes/${noteId}`)
+      api.details(`${API_ROOT}/notes/${noteId}`)
         .then((response) => {
           store.currentNote = response;
           render();
@@ -155,7 +155,7 @@ const noteful = (function () {
 
       store.currentQuery.searchTerm = $(event.currentTarget).find('input').val();
 
-      api.search('http://localhost:8080/api/notes', store.currentQuery)
+      api.search(`${API_ROOT}/notes`, store.currentQuery)
         .then(response => {
           store.notes = response;
           render();
@@ -179,10 +179,10 @@ const noteful = (function () {
       };
 
       if (store.currentNote.id) {
-        api.update(`http://localhost:8080/api/notes/${noteObj.id}`, noteObj)
+        api.update(`${API_ROOT}/notes/${noteObj.id}`, noteObj)
           .then(updateResponse => {
             store.currentNote = updateResponse;
-            return api.search('http://localhost:8080/api/notes', store.currentQuery);
+            return api.search(`${API_ROOT}/notes`, store.currentQuery);
           })
           .then(response => {
             store.notes = response;
@@ -190,10 +190,10 @@ const noteful = (function () {
           })
           .catch(handleErrors);
       } else {
-        api.create('http://localhost:8080/api/notes', noteObj)
+        api.create(`${API_ROOT}/notes`, noteObj)
           .then(createResponse => {
             store.currentNote = createResponse;
-            return api.search('http://localhost:8080/api/notes', store.currentQuery);
+            return api.search(`${API_ROOT}/notes`, store.currentQuery);
           })
           .then(response => {
             store.notes = response;
@@ -217,12 +217,12 @@ const noteful = (function () {
       event.preventDefault();
       const noteId = getNoteIdFromElement(event.currentTarget);
 
-      api.remove(`http://localhost:8080/api/notes/${noteId}`)
+      api.remove(`${API_ROOT}/notes/${noteId}`)
         .then(() => {
           if (noteId === store.currentNote.id) {
             store.currentNote = {};
           }
-          return api.search('http://localhost:8080/api/notes', store.currentQuery);
+          return api.search(`${API_ROOT}/api/notes`, store.currentQuery);
         })
         .then(response => {
           store.notes = response;
@@ -245,7 +245,7 @@ const noteful = (function () {
         store.currentNote = {};
       }
 
-      api.search('http://localhost:8080/api/notes', store.currentQuery)
+      api.search(`${API_ROOT}/notes`, store.currentQuery)
         .then(response => {
           store.notes = response;
           render();
@@ -259,10 +259,10 @@ const noteful = (function () {
       event.preventDefault();
 
       const newFolderEl = $('.js-new-folder-entry');
-      api.create('http://localhost:8080/api/folders', { name: newFolderEl.val() })
+      api.create(`${API_ROOT}/folders`, { name: newFolderEl.val() })
         .then(() => {
           newFolderEl.val('');
-          return api.search('http://localhost:8080/api/folders');
+          return api.search(`${API_ROOT}/folders`);
         })
         .then(response => {
           store.folders = response;
@@ -284,10 +284,10 @@ const noteful = (function () {
         store.currentNote = {};
       }
 
-      api.remove(`http://localhost:8080/api/folders/${folderId}`)
+      api.remove(`${API_ROOT}/folders/${folderId}`)
         .then(() => {
-          const notesPromise = api.search('http://localhost:8080/api/notes');
-          const folderPromise = api.search('http://localhost:8080/api/folders');
+          const notesPromise = api.search(`${API_ROOT}/notes`);
+          const folderPromise = api.search(`${API_ROOT}/folders`);
           return Promise.all([notesPromise, folderPromise]);
         })
         .then(([notes, folders]) => {
@@ -311,7 +311,7 @@ const noteful = (function () {
 
       store.currentNote = {};
 
-      api.search('http://localhost:8080/api/notes', store.currentQuery)
+      api.search(`${API_ROOT}/notes`, store.currentQuery)
         .then(response => {
           store.notes = response;
           render();
@@ -326,10 +326,10 @@ const noteful = (function () {
 
       const newTagEl = $('.js-new-tag-entry');
 
-      api.create('http://localhost:8080/api/tags', { name: newTagEl.val() })
+      api.create(`${API_ROOT}/tags`, { name: newTagEl.val() })
         .then(() => {
           newTagEl.val('');
-          return api.search('http://localhost:8080/api/tags');
+          return api.search(`${API_ROOT}/tags`);
         })
         .then(response => {
           store.tags = response;
@@ -350,13 +350,13 @@ const noteful = (function () {
 
       store.currentNote = {};
 
-      api.remove(`http://localhost:8080/api/tags/${tagId}`)
+      api.remove(`${API_ROOT}/tags/${tagId}`)
         .then(() => {
-          return api.search('http://localhost:8080/api/tags');
+          return api.search(`${API_ROOT}/tags`);
         })
         .then(response => {
           store.tags = response;
-          return api.search('http://localhost:8080/api/notes', store.currentQuery);
+          return api.search(`${API_ROOT}/notes`, store.currentQuery);
         })
         .then(response => {
           store.notes = response;
@@ -377,7 +377,7 @@ const noteful = (function () {
         password: signupForm.find('.js-password-entry').val()
       };
 
-      api.create('http://localhost:8080/api/users', newUser)
+      api.create(`${API_ROOT}/users/sign-up`, newUser)
         .then(response => {
           signupForm[0].reset();
           showSuccessMessage(`Thank you, ${response.fullname || response.username} for signing up! Please login.`);
@@ -396,16 +396,16 @@ const noteful = (function () {
         password: loginForm.find('.js-password-entry').val()
       };
 
-      api.create('http://localhost:8080/api/login', loginUser)
+      api.create(`${API_ROOT}/login`, loginUser)
         .then(response => {
           store.authToken = response.authToken;
           store.authorized = true;
           loginForm[0].reset();
 
           return Promise.all([
-            api.search('http://localhost:8080/api/notes'),
-            api.search('http://localhost:8080/api/folders'),
-            api.search('http://localhost:8080/api/tags')
+            api.search(`${API_ROOT}/notes`),
+            api.search(`${API_ROOT}/folders`),
+            api.search(`${API_ROOT}/tags`)
           ]);
         })
         .then(([notes, folders, tags]) => {

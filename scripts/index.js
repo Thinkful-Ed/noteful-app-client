@@ -7,7 +7,7 @@ const API_ROOT_ELEMENT_NAME = 'API_ROOT';
 
 $(document).ready(function () {
   
-  API_ROOT = $(`[name="${API_ROOT_ELEMENT_NAME}"]`)[0];
+  API_ROOT = $(`[name="${API_ROOT_ELEMENT_NAME}"]`)[0].content;
   noteful.bindEventListeners();
 
   noteful.render();
